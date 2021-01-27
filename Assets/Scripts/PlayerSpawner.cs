@@ -29,16 +29,12 @@ namespace Comony
                 var rand = new System.Random();
                 pos = new Vector3(rand.Next(-4, 4), 0, rand.Next(-4, 4));
                 rot = Quaternion.identity;
+                _avatarRoot = PhotonNetwork.Instantiate(ObjectToSpawn.name, pos, rot, 0, data);
             }
             else
             {
-                pos = _avatarRoot.transform.position;
-                rot = _avatarRoot.transform.rotation;
-
-                PhotonNetwork.Destroy(_avatarRoot);
+                _avatarRoot.GetPhotonView().RPC("ChangeAvatarModel", RpcTarget.All, downloadLicenseId);
             }
-
-            _avatarRoot = PhotonNetwork.Instantiate(ObjectToSpawn.name, pos, rot, 0, data);
         }
 
         public override void OnModelLoaded(GameObject go)

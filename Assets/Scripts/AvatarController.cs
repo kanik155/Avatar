@@ -19,6 +19,8 @@ namespace Comony
         private bool _isInitialPos = true;
         private GameObject _vrm;
 
+        private string _downloadLicenseId;
+
         private void Awake()
         {
             if (photonView.IsMine)
@@ -75,8 +77,6 @@ namespace Comony
                     transform.rotation = _correctPlayerRot;
 
                     _isInitialPos = false;
-
-                    Debug.LogError("isInitialPos");
                 }
                 else
                 {
@@ -92,7 +92,6 @@ namespace Comony
             {
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
-
             }
             else
             {
@@ -103,6 +102,8 @@ namespace Comony
 
         public void OnPhotonInstantiate(PhotonMessageInfo info)
         {
+            _downloadLicenseId = (string)photonView.InstantiationData[0];
+
             if (photonView.IsMine)
             {
                 LoadAvatarWhenUnload(gameObject.transform, true);
@@ -129,6 +130,20 @@ namespace Comony
             }
         }
 
+        [PunRPC]
+        public void ChangeAvatarModel(string downloadLicenseId)
+        {
+            _downloadLicenseId = downloadLicenseId;
+            Destroy(_vrm);
+            _vrm = null;
+            _unloadIcon.SetActive(true);
+
+            if (photonView.IsMine)
+            {
+                LoadAvatarWhenUnload(gameObject.transform);
+            }
+        }
+
 
         public void LoadAvatarWhenUnload(Transform parent, bool force = false)
         {
@@ -145,7 +160,7 @@ namespace Comony
                 _currentTime = 0f;
 
                 HubMultiplayModelDeserializer.Instance.LoadCharacterAsync(
-                    downloadLicenseId: (string)photonView.InstantiationData[0],
+                    downloadLicenseId: _downloadLicenseId,
                     option: new HubModelDeserializerOption()
                     {
                         DownloadTimeout = 300,
