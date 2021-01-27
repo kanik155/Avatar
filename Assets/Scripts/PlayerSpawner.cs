@@ -3,11 +3,13 @@ using UnityEngine;
 using VRoidSDK.Examples.MultiplayExample;
 using VRoidSDK.Examples.Core.Localize;
 
-namespace Dissonance.Integrations.PhotonUnityNetworking2.Demo
+namespace Comony
 {
     public class PlayerSpawner : MultiplayExampleEventHandler
     {
         public GameObject ObjectToSpawn;
+
+        private GameObject _avatarRoot;
 
         [SerializeField] private Routes _routes;
 
@@ -19,11 +21,24 @@ namespace Dissonance.Integrations.PhotonUnityNetworking2.Demo
         public override void OnDownloadLicenseLoaded(string downloadLicenseId)
         {
             object[] data = new object[] { downloadLicenseId };
+            Vector3 pos;
+            Quaternion rot;
 
-            var rand = new System.Random();
-            var pos = new Vector3(rand.Next(-4, 4), 0, rand.Next(-4, 4));
+            if (_avatarRoot == null)
+            {
+                var rand = new System.Random();
+                pos = new Vector3(rand.Next(-4, 4), 0, rand.Next(-4, 4));
+                rot = Quaternion.identity;
+            }
+            else
+            {
+                pos = _avatarRoot.transform.position;
+                rot = _avatarRoot.transform.rotation;
 
-            PhotonNetwork.Instantiate(ObjectToSpawn.name, pos, Quaternion.identity, 0, data);
+                PhotonNetwork.Destroy(_avatarRoot);
+            }
+
+            _avatarRoot = PhotonNetwork.Instantiate(ObjectToSpawn.name, pos, rot, 0, data);
         }
 
         public override void OnModelLoaded(GameObject go)

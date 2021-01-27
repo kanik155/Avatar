@@ -16,7 +16,7 @@ namespace Comony
         private Vector3 _correctPlayerPos;
         private Quaternion _correctPlayerRot;
         private Rigidbody _rigidbody;
-        private bool _isFirst = true;
+        private bool _isInitialPos = true;
         private GameObject _vrm;
 
         private void Awake()
@@ -69,12 +69,14 @@ namespace Comony
         {
             if (!photonView.IsMine)
             {
-                if (_isFirst)
+                if (_isInitialPos)
                 {
                     transform.position = _correctPlayerPos;
                     transform.rotation = _correctPlayerRot;
 
-                    _isFirst = false;
+                    _isInitialPos = false;
+
+                    Debug.LogError("isInitialPos");
                 }
                 else
                 {
