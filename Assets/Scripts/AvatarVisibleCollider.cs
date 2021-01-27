@@ -55,7 +55,7 @@ namespace Comony
                     {
                         _currentTime = 0;
 
-                        _avatarController.LoadAvatarWhenUnload(transform.parent);
+                        // _avatarController.LoadAvatarWhenUnload(transform.parent);
                     }
                 }
             }
