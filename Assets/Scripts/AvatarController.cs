@@ -64,18 +64,8 @@ namespace Comony
         {
             if (!photonView.IsMine)
             {
-                if (_isInitialPos)
-                {
-                    transform.position = _correctPlayerPos;
-                    transform.rotation = _correctPlayerRot;
-
-                    _isInitialPos = false;
-                }
-                else
-                {
-                    transform.position = Vector3.Lerp(transform.position, _correctPlayerPos, Time.deltaTime * 5);
-                    transform.rotation = Quaternion.Lerp(transform.rotation, _correctPlayerRot, Time.deltaTime * 5);
-                }
+                transform.position = Vector3.Lerp(transform.position, _correctPlayerPos, Time.deltaTime * 5);
+                transform.rotation = Quaternion.Lerp(transform.rotation, _correctPlayerRot, Time.deltaTime * 5);
             }
         }
 
@@ -90,6 +80,14 @@ namespace Comony
             {
                 _correctPlayerPos = (Vector3)stream.ReceiveNext();
                 _correctPlayerRot = (Quaternion)stream.ReceiveNext();
+
+                if (_isInitialPos)
+                {
+                    transform.position = _correctPlayerPos;
+                    transform.rotation = _correctPlayerRot;
+
+                    _isInitialPos = false;
+                }
             }
         }
 
