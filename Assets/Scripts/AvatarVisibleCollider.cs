@@ -5,7 +5,7 @@ namespace Comony
 {
     public class AvatarVisibleCollider : MonoBehaviour
     {
-        [SerializeField] private float _intervalTime = 3.0f;
+        [SerializeField] private float _intervalTime = 0.2f;
 
         private PhotonView _photonView;
         private float _currentTime = 0;
@@ -55,7 +55,7 @@ namespace Comony
                     {
                         _currentTime = 0;
 
-                        // _avatarController.LoadAvatarWhenUnload(transform.parent);
+                        _avatarController.ShowModel2();
                     }
                 }
             }

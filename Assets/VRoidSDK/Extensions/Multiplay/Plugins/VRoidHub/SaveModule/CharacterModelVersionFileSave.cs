@@ -36,7 +36,13 @@ namespace VRoidSDK.Extension.Multiplay
             cacheFileInfo.FilePath = license.FileName;
             cacheFileInfo.ExpiresAt = license.ExpiresAtDateTime();
             cacheFileInfo.UpdateLastAccessTime();
-            _fileWriter.Save(cacheFileInfo.FilePath, downloadedData);
+            // MARK: Catch IOException
+            try
+            {
+                _fileWriter.Save(cacheFileInfo.FilePath, downloadedData);
+            }
+            catch (System.IO.IOException e)
+            { }
             _storage.SetValue(cacheFileInfo.FilePath, cacheFileInfo);
             _storage.Save();
         }

@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using UnityEngine;
 using System.IO;
-using VRoidSDK;
 using VRoidSDK.IO;
 
 namespace VRoidSDK.Extension.Multiplay
@@ -119,8 +118,13 @@ namespace VRoidSDK.Extension.Multiplay
         {
             lock (_allDataLock)
             {
-                var json = JsonUtility.ToJson(_saveData);
-                _fileWriter.Save(_storageFilePath, Encoding.UTF8.GetBytes(json));
+                // MARK: Catch IOException
+                try
+                {
+                    var json = JsonUtility.ToJson(_saveData);
+                    _fileWriter.Save(_storageFilePath, Encoding.UTF8.GetBytes(json));
+                }
+                catch (IOException e) { }
             }
         }
     }

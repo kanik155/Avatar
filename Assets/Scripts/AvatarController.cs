@@ -12,13 +12,12 @@ namespace Comony
         [SerializeField] private float _despawnHeight = -10f;
         [SerializeField] private float _intervalTime = 3.0f;
 
-        private float _currentTime = 0;
         private Vector3 _correctPlayerPos;
         private Quaternion _correctPlayerRot;
         private Rigidbody _rigidbody;
         private bool _isInitialPos = true;
         private GameObject _vrm;
-
+        private bool _isReady = false;
         private string _downloadLicenseId;
 
         private void Awake()
@@ -39,13 +38,6 @@ namespace Comony
         {
             UpdateControl();
             UpdatePhoton();
-
-            _currentTime += Time.deltaTime;
-
-            if (photonView.IsMine)
-            {
-                // LoadAvatarWhenUnload(transform.parent);
-            }
         }
 
         private void UpdateControl()
@@ -104,10 +96,11 @@ namespace Comony
         public void OnPhotonInstantiate(PhotonMessageInfo info)
         {
             _downloadLicenseId = (string)photonView.InstantiationData[0];
+            _isReady = true;
 
             if (photonView.IsMine)
             {
-                LoadAvatarWhenUnload(gameObject.transform, true);
+                LoadAvatar(gameObject.transform);
             }
         }
 
@@ -118,8 +111,18 @@ namespace Comony
                 _vrm.SetActive(true);
                 _unloadIcon.SetActive(false);
             }
+            else
+            {
+                LoadAvatar(gameObject.transform);
+            }
+        }
 
-            LoadAvatarWhenUnload(gameObject.transform);
+        public void ShowModel2()
+        {
+            if (!_vrm)
+            {
+                LoadAvatar(gameObject.transform);
+            }
         }
 
         public void HideModel()
@@ -139,78 +142,74 @@ namespace Comony
             Destroy(_vrm);
             _vrm = null;
             _unloadIcon.SetActive(true);
+            _isReady = true;
 
             if (photonView.IsMine)
             {
-                LoadAvatarWhenUnload(gameObject.transform);
+                LoadAvatar(gameObject.transform);
             }
         }
 
-
-        public void LoadAvatarWhenUnload(Transform parent, bool force = false)
+        public void LoadAvatar(Transform parent)
         {
-            if (_vrm == null)
+            if (_isReady)
             {
-                LoadAvatar(parent, force);
+                _isReady = false;
+
+                HubMultiplayModelDeserializer.Instance.LoadCharacterAsync(
+                    downloadLicenseId: _downloadLicenseId,
+                    option: new HubModelDeserializerOption()
+                    {
+                        DownloadTimeout = 300,
+                    },
+                    onLoadComplete: (go) =>
+                    {
+                        if (_vrm == null)
+                        {
+                            go.transform.parent = parent;
+                            go.transform.position = parent.position;
+                            go.transform.rotation = parent.rotation;
+                            _vrm = go;
+
+                            var animator = _vrm.GetComponent<Animator>();
+                            animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("AvatarAnimatorController");
+                            _unloadIcon.SetActive(false);
+
+                            if (photonView.IsMine)
+                            {
+                                _vrm.AddComponent<AvatarAnimatorControllerController>();
+                            }
+
+                            PhotonAnimatorView photonAnimatorView = _vrm.AddComponent<PhotonAnimatorView>();
+
+                            for (var count = 0; count < animator.layerCount; count++)
+                            {
+                                photonAnimatorView.SetLayerSynchronized(count, PhotonAnimatorView.SynchronizeType.Discrete);
+                            }
+
+                            foreach (AnimatorControllerParameter animatorControllerParameter in animator.parameters)
+                            {
+                                photonAnimatorView.SetParameterSynchronized(animatorControllerParameter.name,
+                                    (PhotonAnimatorView.ParameterType)animatorControllerParameter.type,
+                                    PhotonAnimatorView.SynchronizeType.Discrete);
+                            }
+
+                            photonView.ObservedComponents.Add(photonAnimatorView);
+                        }
+                        else
+                        {
+                            Debug.LogError("Destroy Avatar");
+                            Destroy(go);
+                        }
+                    },
+                    onDownloadProgress: null,
+                    onError: (error) =>
+                    {
+                        Debug.LogError("Download Error");
+                        Debug.LogError(error);
+                    }
+                );
             }
-        }
-
-        public void LoadAvatar(Transform parent, bool force = false)
-        {
-            // if (force || _currentTime >= _intervalTime)
-            // {
-            _currentTime = 0f;
-
-            HubMultiplayModelDeserializer.Instance.LoadCharacterAsync(
-                downloadLicenseId: _downloadLicenseId,
-                option: new HubModelDeserializerOption()
-                {
-                    DownloadTimeout = 300,
-                },
-                onLoadComplete: (go) =>
-                {
-                    if (_vrm == null)
-                    {
-                        go.transform.parent = parent;
-                        go.transform.position = parent.position;
-                        go.transform.rotation = parent.rotation;
-                        _vrm = go;
-
-                        var animator = _vrm.GetComponent<Animator>();
-                        animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("AvatarAnimatorController");
-                        _unloadIcon.SetActive(false);
-
-                        if (photonView.IsMine)
-                        {
-                            _vrm.AddComponent<AvatarAnimatorControllerController>();
-                        }
-
-                        PhotonAnimatorView photonAnimatorView = _vrm.AddComponent<PhotonAnimatorView>();
-
-                        for (var count = 0; count < animator.layerCount; count++)
-                        {
-                            photonAnimatorView.SetLayerSynchronized(count, PhotonAnimatorView.SynchronizeType.Discrete);
-                        }
-
-                        foreach (AnimatorControllerParameter animatorControllerParameter in animator.parameters)
-                        {
-                            photonAnimatorView.SetParameterSynchronized(animatorControllerParameter.name,
-                                (PhotonAnimatorView.ParameterType)animatorControllerParameter.type,
-                                PhotonAnimatorView.SynchronizeType.Discrete);
-                        }
-
-                        photonView.ObservedComponents.Add(photonAnimatorView);
-                    }
-                    else
-                    {
-                        Debug.LogError("Destroy VRM");
-                        Destroy(go);
-                    }
-                },
-                onDownloadProgress: null,
-                onError: null
-            );
-            //}
         }
     }
 }
