@@ -1,4 +1,5 @@
 ﻿using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 using VRoidSDK.Examples.MultiplayExample;
 using VRoidSDK.Examples.Core.Localize;
@@ -33,7 +34,7 @@ namespace Comony
             }
             else
             {
-                _avatarRoot.GetPhotonView().RPC("ChangeAvatarModel", RpcTarget.All, downloadLicenseId);
+                _avatarRoot.GetPhotonView().RPC("ChangeAvatarModel", RpcTarget.AllBuffered, downloadLicenseId);
             }
         }
 

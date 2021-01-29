@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using ExitGames.Client.Photon;
+using Photon.Realtime;
 using Photon.Pun;
 using VRoidSDK;
 using VRoidSDK.Extension.Multiplay;
@@ -8,6 +10,7 @@ namespace Comony
     public class AvatarController : MonoBehaviourPunCallbacks, IPunObservable, IPunInstantiateMagicCallback
     {
         [SerializeField] private GameObject _unloadIcon;
+        [SerializeField] private GameObject _avatarVisibleCollider;
         [SerializeField] private float _voiceRange = 2f;
         [SerializeField] private float _despawnHeight = -10f;
         [SerializeField] private float _intervalTime = 3.0f;
@@ -29,6 +32,10 @@ namespace Comony
                 _rigidbody = gameObject.AddComponent<Rigidbody>();
                 _rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
                 _rigidbody.collisionDetectionMode = CollisionDetectionMode.Discrete;
+            }
+            else
+            {
+                _avatarVisibleCollider.AddComponent<AvatarVisibleCollider>();
             }
 
             var sphereCollider = gameObject.AddComponent<SphereCollider>();
