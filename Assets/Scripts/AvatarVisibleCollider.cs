@@ -5,11 +5,7 @@ namespace Comony
 {
     public class AvatarVisibleCollider : MonoBehaviour
     {
-        [SerializeField] private float _intervalTime = 0.2f;
-
         private PhotonView _photonView;
-        private float _currentTime = 0;
-
         private AvatarController _avatarController;
 
         private void Awake()
@@ -25,6 +21,8 @@ namespace Comony
                 if (other.gameObject.layer == LayerMask.NameToLayer("AvatarVisibleCollider"))
                 {
                     _avatarController.ShowModel();
+
+                    _avatarController.Stay = true;
                 }
             }
         }
@@ -35,28 +33,9 @@ namespace Comony
             {
                 if (other.gameObject.layer == LayerMask.NameToLayer("AvatarVisibleCollider"))
                 {
-                    _currentTime = 0;
-
                     _avatarController.HideModel();
 
-                }
-            }
-        }
-
-        private void OnTriggerStay(Collider other)
-        {
-            if (!_photonView.IsMine)
-            {
-                if (other.gameObject.layer == LayerMask.NameToLayer("AvatarVisibleCollider"))
-                {
-                    _currentTime += Time.deltaTime;
-
-                    if (_currentTime >= _intervalTime)
-                    {
-                        _currentTime = 0;
-
-                        _avatarController.ShowModel2();
-                    }
+                    _avatarController.Stay = false;
                 }
             }
         }

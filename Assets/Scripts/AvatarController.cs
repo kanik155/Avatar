@@ -20,13 +20,15 @@ namespace Comony
         private bool _isReady = false;
         private string _downloadLicenseId;
 
+        public bool Stay { get; set; }
+
         private void Awake()
         {
             if (photonView.IsMine)
             {
                 _rigidbody = gameObject.AddComponent<Rigidbody>();
                 _rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-                _rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+                _rigidbody.collisionDetectionMode = CollisionDetectionMode.Discrete;
             }
 
             var sphereCollider = gameObject.AddComponent<SphereCollider>();
@@ -115,14 +117,6 @@ namespace Comony
             }
         }
 
-        public void ShowModel2()
-        {
-            if (!_vrm)
-            {
-                LoadAvatar(gameObject.transform);
-            }
-        }
-
         public void HideModel()
         {
             if (_vrm)
@@ -145,6 +139,13 @@ namespace Comony
             if (photonView.IsMine)
             {
                 LoadAvatar(gameObject.transform);
+            }
+            else
+            {
+                if (Stay)
+                {
+                    LoadAvatar(gameObject.transform);
+                }
             }
         }
 
@@ -204,7 +205,6 @@ namespace Comony
                     onError: (error) =>
                     {
                         Debug.LogError("Download Error");
-                        Debug.LogError(error);
                     }
                 );
             }
