@@ -14,7 +14,7 @@ namespace Comony
         [SerializeField] private float _despawnHeight = -10f;
         [SerializeField] private float _intervalTime = 3.0f;
 
-        [SerializeField] private GameObject _firstCamera;
+        // [SerializeField] private GameObject _firstCamera;
 
         private Vector3 _correctPlayerPos;
         private Quaternion _correctPlayerRot;
@@ -31,8 +31,8 @@ namespace Comony
             if (photonView.IsMine)
             {
                 Camera mainCamera = Camera.main;
-                mainCamera.gameObject.SetActive(false);
-                _firstCamera.SetActive(true);
+                // mainCamera.gameObject.SetActive(false);
+                // _firstCamera.SetActive(true);
 
                 _rigidbody = gameObject.AddComponent<Rigidbody>();
                 _rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
