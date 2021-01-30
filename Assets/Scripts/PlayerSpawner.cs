@@ -1,58 +1,22 @@
-﻿using Photon.Pun;
-using Photon.Realtime;
+﻿using JetBrains.Annotations;
+using Photon.Pun;
 using UnityEngine;
-using VRoidSDK.Examples.MultiplayExample;
-using VRoidSDK.Examples.Core.Localize;
 
-namespace Comony
+namespace Dissonance.Integrations.PhotonUnityNetworking2.Demo
 {
-    public class PlayerSpawner : MultiplayExampleEventHandler
+    public class PlayerSpawner
+        : MonoBehaviour
     {
-        public GameObject ObjectToSpawn;
+        [UsedImplicitly] public GameObject ObjectToSpawn;
 
-        private GameObject _avatarRoot;
-
-        [SerializeField] private Routes _routes;
-
-        private void Start()
+        [UsedImplicitly] private void Start()
         {
-            _routes.ShowCharacterModels();
-        }
+            var rand = new System.Random();
+            var pos = new Vector3(rand.Next(-15, 15), 0, rand.Next(-15, 15));
 
-        public override void OnDownloadLicenseLoaded(string downloadLicenseId)
-        {
-            object[] data = new object[] { downloadLicenseId };
-            Vector3 pos;
-            Quaternion rot;
+            PhotonNetwork.Instantiate(ObjectToSpawn.name, pos, Quaternion.identity, 0);
 
-            if (_avatarRoot == null)
-            {
-                var rand = new System.Random();
-                pos = new Vector3(rand.Next(-4, 4), 0, rand.Next(-4, 4));
-                rot = Quaternion.identity;
-                _avatarRoot = PhotonNetwork.Instantiate(ObjectToSpawn.name, pos, rot, 0, data);
-            }
-            else
-            {
-                _avatarRoot.GetPhotonView().RPC("ChangeAvatarModel", RpcTarget.AllBuffered, downloadLicenseId);
-            }
-        }
-
-        public override void OnModelLoaded(GameObject go)
-        {
-        }
-
-        public override void OnLangChanged(Translator.Locales locale)
-        {
-            switch (locale)
-            {
-                case Translator.Locales.JA:
-                    break;
-                case Translator.Locales.EN:
-                    break;
-                default:
-                    break;
-            }
+            Destroy(gameObject);
         }
     }
 }
