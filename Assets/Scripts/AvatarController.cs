@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using ExitGames.Client.Photon;
-using Photon.Realtime;
 using Photon.Pun;
 using VRoidSDK;
 using VRoidSDK.Extension.Multiplay;
@@ -10,10 +8,13 @@ namespace Comony
     public class AvatarController : MonoBehaviourPunCallbacks, IPunObservable, IPunInstantiateMagicCallback
     {
         [SerializeField] private GameObject _unloadIcon;
+        [SerializeField] private GameObject _namePlate;
         [SerializeField] private GameObject _avatarVisibleCollider;
         [SerializeField] private float _voiceRange = 2f;
         [SerializeField] private float _despawnHeight = -10f;
         [SerializeField] private float _intervalTime = 3.0f;
+
+        [SerializeField] private GameObject _firstCamera;
 
         private Vector3 _correctPlayerPos;
         private Quaternion _correctPlayerRot;
@@ -29,6 +30,10 @@ namespace Comony
         {
             if (photonView.IsMine)
             {
+                Camera mainCamera = Camera.main;
+                mainCamera.gameObject.SetActive(false);
+                _firstCamera.SetActive(true);
+
                 _rigidbody = gameObject.AddComponent<Rigidbody>();
                 _rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
                 _rigidbody.collisionDetectionMode = CollisionDetectionMode.Discrete;
@@ -117,6 +122,7 @@ namespace Comony
             {
                 _vrm.SetActive(true);
                 _unloadIcon.SetActive(false);
+                _namePlate.SetActive(true);
             }
             else
             {
@@ -130,6 +136,7 @@ namespace Comony
             {
                 _vrm.SetActive(false);
                 _unloadIcon.SetActive(true);
+                _namePlate.SetActive(false);
             }
         }
 
@@ -180,6 +187,7 @@ namespace Comony
                             var animator = _vrm.GetComponent<Animator>();
                             animator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("AvatarAnimatorController");
                             _unloadIcon.SetActive(false);
+                            _namePlate.SetActive(true);
 
                             if (photonView.IsMine)
                             {

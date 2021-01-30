@@ -14,6 +14,7 @@ namespace Comony
 
         private void Update()
         {
+            /*
             if (_currentTime < _intervalTime)
             {
                 _currentTime += Time.deltaTime;
@@ -21,6 +22,7 @@ namespace Comony
             }
 
             _currentTime = 0;
+            */
 
             transform.LookAt(Camera.main.transform.position);
         }
