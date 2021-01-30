@@ -58,7 +58,7 @@ namespace Comony
         {
             if (photonView.IsMine)
             {
-
+                /*
                 var rotation = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
                 var speed = Input.GetAxis("Vertical") * Time.deltaTime * 6.0f;
 
@@ -71,6 +71,7 @@ namespace Comony
                     transform.position = Vector3.zero;
                     transform.rotation = Quaternion.identity;
                 }
+                */
             }
         }
 

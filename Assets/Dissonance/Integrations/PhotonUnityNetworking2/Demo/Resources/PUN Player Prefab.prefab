@@ -249,7 +249,6 @@ MonoBehaviour:
   _voiceRange: 2
   _despawnHeight: -10
   _intervalTime: 3
-  _firstCamera: {fileID: 0}
 --- !u!143 &143145086481960964
 CharacterController:
   m_ObjectHideFlags: 0
