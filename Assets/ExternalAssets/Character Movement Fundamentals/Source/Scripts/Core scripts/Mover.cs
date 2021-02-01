@@ -51,7 +51,7 @@ namespace CMF
         Transform tr;
         Sensor sensor;
 
-        void Awake()
+        void Start()
         {
             Setup();
 
